@@ -3,9 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta, timezone
 import random
 import string
+import os
 
+basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, static_url_path='/static', static_folder='static')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///coolshare.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'coolshare.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
