@@ -1,9 +1,8 @@
 name: Build and Publish Docker Image to GitHub Packages
-
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   build-and-publish:
@@ -28,4 +27,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/coolshare:latest
+          tags: ghcr.io/${{ github.repository_owner }}/your-image-name:latest
+
+      - name: Logout of GitHub Container Registry
+        uses: docker/logout-action@v1
