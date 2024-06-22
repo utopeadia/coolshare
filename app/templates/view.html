@@ -31,21 +31,24 @@
 		</div>
 
 		<script>
-			document.addEventListener("DOMContentLoaded", (event) => {
-				hljs.highlightElement(document.getElementById("view-code"));
+			document.addEventListener('DOMContentLoaded', (event) => {
+				const codeContainer = document.getElementById('view-code');
+				const code = codeContainer.textContent; // 获取原始代码文本
+				codeContainer.textContent = code; // 使用textContent直接设置，不进行HTML解析
+				hljs.highlightElement(codeContainer); // 使用highlight.js进行代码高亮
 
-				const copyButton = document.getElementById("copy-button");
-				const destroyButton = document.getElementById("destroy-button");
-				const countdownDiv = document.getElementById("countdown");
+				const copyButton = document.getElementById('copy-button');
+				const destroyButton = document.getElementById('destroy-button');
+				const countdownDiv = document.getElementById('countdown');
 
-				copyButton.addEventListener("click", () => {
-					const code = document.getElementById("view-code").textContent;
+				copyButton.addEventListener('click', () => {
+					const code = document.getElementById('view-code').textContent;
 					navigator.clipboard.writeText(code).then(
 						() => {
-							alert("代码已复制到剪贴板");
+							alert('代码已复制到剪贴板');
 						},
 						(err) => {
-							console.error("无法复制代码: ", err);
+							console.error('无法复制代码: ', err);
 						}
 					);
 				});
