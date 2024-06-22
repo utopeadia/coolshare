@@ -5,6 +5,7 @@ import random
 import string
 import os
 
+MAX_SHARE_TIME = 4320
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'coolshare.db')
@@ -37,12 +38,22 @@ def share_code():
     if not code_content or not share_time:
         return jsonify({'error': '缺少必要参数'}), 400
 
-    share_code = custom_code if custom_code else generate_share_code()
-    
-    # 使用 timezone.utc 获取 UTC 时间
-    expiration_time = datetime.now(timezone.utc) + timedelta(minutes=int(share_time))
+    try:
+        share_time = int(share_time)
+        if share_time <= 0 or share_time > MAX_SHARE_TIME:
+            return jsonify({'error': f'分享时间必须在 1 到 {MAX_SHARE_TIME} 分钟之间'}), 400
+    except ValueError:
+        return jsonify({'error': '无效的分享时间'}), 400
 
-    new_share = CodeShare(share_code=share_code, code_content=code_content, expiration_time=expiration_time)
+    share_code = custom_code if custom_code else generate_share_code()
+
+    expiration_time = datetime.now(timezone.utc) + timedelta(minutes=share_time)
+
+    new_share = CodeShare(
+        share_code=share_code, 
+        code_content=code_content, 
+        expiration_time=expiration_time
+    )
     db.session.add(new_share)
     db.session.commit()
 
@@ -51,22 +62,23 @@ def share_code():
 @app.route('/<share_code>', methods=['GET'])
 def view_code(share_code):
     share = CodeShare.query.filter_by(share_code=share_code).first()
-    
+
     if not share:
         abort(404)
 
-    # 将从数据库中取出的 expiration_time 也转换为带有 UTC 时区信息的 datetime 对象
     expiration_time_aware = share.expiration_time.replace(tzinfo=timezone.utc)
 
-    # 现在两个 datetime 对象都有时区信息，可以进行比较
     if datetime.now(timezone.utc) > expiration_time_aware:
         db.session.delete(share)
         db.session.commit()
         abort(404)
 
-    # 使用 timestamp() 方法获取毫秒级时间戳
     expiration_timestamp_ms = int(expiration_time_aware.timestamp() * 1000)
-    return render_template('view.html', code=share.code_content, expiration_time=expiration_timestamp_ms) 
+    return render_template(
+        'view.html', 
+        code=share.code_content, 
+        expiration_time=expiration_timestamp_ms
+    ) 
 
 @app.route('/destroy', methods=['POST'])
 def destroy_code():
