@@ -1,146 +1,83 @@
-import os
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, redirect, abort
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta
 import random
 import string
-from apscheduler.schedulers.background import BackgroundScheduler
+import os
 
 app = Flask(__name__)
-
-MAXSHARE = int(os.environ.get('MAXSHARE', 100))
-
-# Database setup
-basedir = os.path.abspath(os.path.dirname(__file__))
-data_dir = os.path.join(basedir, 'data')
-if not os.path.exists(data_dir):
-    os.makedirs(data_dir)
-
-db_path = os.path.join(data_dir, 'codes.db')
-if not os.path.exists(db_path):
-    open(db_path, 'a').close()
-
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///coolshare.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-app.config['SECRET_KEY'] = os.environ.get('SECRETKEY', 'yoursession')
 
-class CodeSnippet(db.Model):
+class CodeShare(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    share_code = db.Column(db.String(10), unique=True, nullable=False)
-    code = db.Column(db.Text, nullable=False)
-    expire_at = db.Column(db.DateTime, nullable=False)
+    share_code = db.Column(db.String(6), unique=True, nullable=False)
+    code_content = db.Column(db.Text, nullable=False)
+    expiration_time = db.Column(db.DateTime, nullable=False)
 
-class ShareLog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    ip_address = db.Column(db.String(45), nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+def generate_share_code():
+    while True:
+        code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        if not CodeShare.query.filter_by(share_code=code).first():
+            return code
 
-class DeleteLog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    ip_address = db.Column(db.String(45), nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-
-with app.app_context():
-    db.create_all()
-
-def generate_code(length=6):
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
-
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
 @app.route('/share', methods=['POST'])
-def share():
+def share_code():
     data = request.json
-    code = data.get('code')
+    code_content = data.get('code')
     custom_code = data.get('customCode')
-    custom_time = data.get('customTime')
+    share_time = data.get('shareTime')
 
-    ip_address = request.remote_addr
+    if not code_content or not share_time:
+        return jsonify({'error': '缺少必要参数'}), 400
 
-    one_minute_ago = datetime.now() - timedelta(minutes=1)
-    with app.app_context():
-        share_count = ShareLog.query.filter(
-            ShareLog.ip_address == ip_address,
-            ShareLog.timestamp >= one_minute_ago
-        ).count()
+    share_code = custom_code if custom_code else generate_share_code()
+    expiration_time = datetime.utcnow() + timedelta(minutes=int(share_time))
 
-        if share_count >= MAXSHARE:
-            return jsonify({'error': '分享过于频繁，请稍后再试'}), 429
-
-        if custom_code:
-            share_code = custom_code
-        else:
-            share_code = generate_code()
-
-        if custom_time:
-            expire_time = int(custom_time)
-        else:
-            expire_time = 5
-
-        if expire_time > 28800:
-            return jsonify({'error': '自定义时间不能超过48小时'}), 400
-
-        expire_at = datetime.now() + timedelta(minutes=expire_time)
-        new_snippet = CodeSnippet(share_code=share_code, code=code, expire_at=expire_at)
-
-        db.session.add(new_snippet)
-        new_log = ShareLog(ip_address=ip_address)
-        db.session.add(new_log)
-
-        db.session.commit()
+    new_share = CodeShare(share_code=share_code, code_content=code_content, expiration_time=expiration_time)
+    db.session.add(new_share)
+    db.session.commit()
 
     return jsonify({'share_code': share_code})
 
-@app.route('/fetch', methods=['POST'])
-def fetch():
-    data = request.json
-    share_code = data.get('share_code')
-    with app.app_context():
-        snippet = CodeSnippet.query.filter_by(share_code=share_code).first()
-        if snippet and snippet.expire_at > datetime.now():
-            return jsonify({'code': snippet.code})
-        else:
-            return jsonify({'error': '无效的分享码或代码片段已过期'}), 404
+@app.route('/<share_code>', methods=['GET'])
+def view_code(share_code):
+    share = CodeShare.query.filter_by(share_code=share_code).first()
+    
+    if not share:
+        abort(404)
+    
+    if datetime.utcnow() > share.expiration_time:
+        db.session.delete(share)
+        db.session.commit()
+        abort(404)
+    
+    return render_template('view.html', code=share.code_content, expiration_time=share.expiration_time)
 
 @app.route('/destroy', methods=['POST'])
-def destroy():
+def destroy_code():
     data = request.json
     share_code = data.get('share_code')
 
-    ip_address = request.remote_addr
+    if not share_code:
+        return jsonify({'error': '缺少分享码'}), 400
 
-    five_minutes_ago = datetime.now() - timedelta(minutes=5)
-    with app.app_context():
-        delete_count = DeleteLog.query.filter(
-            DeleteLog.ip_address == ip_address,
-            DeleteLog.timestamp >= five_minutes_ago
-        ).count()
+    share = CodeShare.query.filter_by(share_code=share_code).first()
 
-        if delete_count >= 3:
-            return jsonify({'error': '操作过于频繁，请稍后再试'}), 429
+    if not share:
+        return jsonify({'error': '找不到对应的分享'}), 404
 
-        snippet = CodeSnippet.query.filter_by(share_code=share_code).first()
-        if snippet:
-            db.session.delete(snippet)
-            new_log = DeleteLog(ip_address=ip_address)
-            db.session.add(new_log)
-            db.session.commit()
-            return jsonify({'message': '代码片段已删除'})
-        else:
-            return jsonify({'error': '无效的分享码'}), 404
+    db.session.delete(share)
+    db.session.commit()
 
-def delete_expired_snippets():
-    with app.app_context():
-        now = datetime.now()
-        CodeSnippet.query.filter(CodeSnippet.expire_at < now).delete()
-        db.session.commit()
-
-scheduler = BackgroundScheduler()
-scheduler.add_job(delete_expired_snippets, 'interval', minutes=1)
-scheduler.start()
+    return jsonify({'message': '分享已成功销毁'})
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
