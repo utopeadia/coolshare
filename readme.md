@@ -1,11 +1,5 @@
-<<<<<<< HEAD
-CoolShare - A very lightweight and cool code snippet sharing tool
-CoolShare--非常非常轻量级、非常非常酷的代码片段共享工具
-
-=======
 CoolShare - A very lightweight and cool code snippet sharing tool </br>
 CoolShare--非常非常轻量级、非常非常酷的代码片段共享工具</br>
->>>>>>> f772e75724f6790bbe01b25f48001de7047b3ab4
 ## 也许现在可以使用了
 
 20240622更新</br>
