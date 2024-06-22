@@ -1,4 +1,4 @@
-CoolShare - A very lightweight and cool code snippet sharing tool
+CoolShare - A very lightweight and cool code snippet sharing tool <\br>
 CoolShare--非常非常轻量级、非常非常酷的代码片段共享工具
 ## 也许现在可以使用了
 
