@@ -64,7 +64,7 @@ def view_code(share_code):
         abort(404)
 
     # 使用 timestamp() 方法获取毫秒级时间戳
-    expiration_timestamp_ms = int(expiration_time_aware.timestamp() * 1000)
+    expiration_timestamp_ms = int(share.expiration_time.timestamp() * 1000)
     return render_template('view.html', code=share.code_content, expiration_time=expiration_timestamp_ms) 
 
 @app.route('/destroy', methods=['POST'])

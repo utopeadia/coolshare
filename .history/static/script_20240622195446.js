@@ -7,7 +7,6 @@ const resultDiv = document.getElementById("result");
 const shareLinkSpan = document.getElementById("share-link");
 const countdownSpan = document.getElementById("countdown");
 const copyButton = document.getElementById("copy-button");
-const destroyButton = document.getElementById("destroy-button");
 const jumpForm = document.getElementById("jump-form");
 const shareCodeInput = document.getElementById("share-code-input");
 
@@ -26,7 +25,7 @@ jumpForm.addEventListener("submit", (e) => {
 
 shareButton.addEventListener("click", async () => {
 	const code = codeInput.value;
-	const customCode = customCodeInput.value.trim();
+	const customCode = customCodeInput.value;
 	let shareTime;
 
 	if (timeSelect.value === "custom") {
@@ -78,31 +77,6 @@ copyButton.addEventListener("click", () => {
 		});
 });
 
-destroyButton.addEventListener("click", async () => {
-	const shareCode = shareLinkSpan.textContent.split("/").pop();
-
-	try {
-		const response = await fetch("/destroy", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ share_code: shareCode }),
-		});
-
-		if (response.ok) {
-			alert("代码片段已销毁");
-			resultDiv.classList.add("hidden");
-		} else {
-			const data = await response.json();
-			alert(`销毁失败: ${data.error}`);
-		}
-	} catch (error) {
-		console.error("Error:", error);
-		alert("销毁失败，请稍后再试");
-	}
-});
-
 function startCountdown(remainingTime) {
 	const updateCountdown = () => {
 		const minutes = Math.floor(remainingTime / 60);
@@ -114,7 +88,7 @@ function startCountdown(remainingTime) {
 		if (remainingTime <= 0) {
 			clearInterval(countdownInterval);
 			countdownSpan.textContent = "已过期";
-			destroyButton.disabled = true;
+			shareButton.disabled = false;
 		}
 
 		remainingTime--;

@@ -26,7 +26,7 @@ jumpForm.addEventListener("submit", (e) => {
 
 shareButton.addEventListener("click", async () => {
 	const code = codeInput.value;
-	const customCode = customCodeInput.value.trim();
+	const customCode = customCodeInput.value;
 	let shareTime;
 
 	if (timeSelect.value === "custom") {

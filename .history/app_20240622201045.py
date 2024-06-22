@@ -53,19 +53,19 @@ def view_code(share_code):
     
     if not share:
         abort(404)
-
+    
     # 将从数据库中取出的 expiration_time 也转换为带有 UTC 时区信息的 datetime 对象
     expiration_time_aware = share.expiration_time.replace(tzinfo=timezone.utc)
-
+    
     # 现在两个 datetime 对象都有时区信息，可以进行比较
     if datetime.now(timezone.utc) > expiration_time_aware:
         db.session.delete(share)
         db.session.commit()
         abort(404)
-
-    # 使用 timestamp() 方法获取毫秒级时间戳
-    expiration_timestamp_ms = int(expiration_time_aware.timestamp() * 1000)
-    return render_template('view.html', code=share.code_content, expiration_time=expiration_timestamp_ms) 
+    
+    expiration_time_iso = share.expiration_time.replace(tzinfo=None).isoformat()
+    
+    return render_template('view.html', code=share.code_content, expiration_time=expiration_time_iso)
 
 @app.route('/destroy', methods=['POST'])
 def destroy_code():
@@ -78,7 +78,7 @@ def destroy_code():
     share = CodeShare.query.filter_by(share_code=share_code).first()
 
     if not share:
-        return jsonify({'error': '找不到对应的分享'}), 404
+        return jsonify({'error': '找不到对应的分享或代码已过期'}), 404
 
     try:
         db.session.delete(share)
@@ -91,7 +91,7 @@ def destroy_code():
 
 @app.errorhandler(404)
 def not_found_error(error):
-    return jsonify({'error': '未找到请求的资源可能是代码过期或被销毁'}), 404
+    return jsonify({'error': '未找到请求的资源'}), 404
 
 @app.errorhandler(500)
 def internal_error(error):

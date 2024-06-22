@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -52,6 +53,17 @@
 
 				destroyButton.addEventListener("click", async () => {
 					const shareCode = window.location.pathname.split("/").pop();
+          
+          // 检查代码片段是否已过期
+          const expirationTimeStr = "{{ expiration_time }}";
+          const expirationTime = new Date(expirationTimeStr).getTime();
+          const now = new Date().getTime();
+
+          if (now > expirationTime) {
+            alert("代码已过期，无法销毁");
+            return; // 停止执行销毁逻辑
+          }
+
 					try {
 						const response = await fetch("/destroy", {
 							method: "POST",
@@ -75,7 +87,7 @@
 				});
 
 				const expirationTimeStr = "{{ expiration_time }}";
-				const expirationTime = new Date(Number(expirationTimeStr));
+				const expirationTime = new Date(expirationTimeStr).getTime();
 
 				function updateCountdown() {
 					const now = new Date().getTime();
@@ -87,19 +99,4 @@
 						);
 						const minutes = Math.floor(
 							(timeLeft % (1000 * 60 * 60)) / (1000 * 60)
-						);
-						const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-						countdownDiv.textContent = `代码将在 ${hours}小时 ${minutes}分钟 ${seconds}秒 后过期`;
-					} else {
-						countdownDiv.textContent = "代码已过期";
-						destroyButton.disabled = true;
-					}
-				}
-
-				updateCountdown();
-				setInterval(updateCountdown, 1000);
-			});
-		</script>
-	</body>
-</html>
+						

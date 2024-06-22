@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template, redirect, abort
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 import random
 import string
 import os
@@ -37,9 +37,7 @@ def share_code():
         return jsonify({'error': '缺少必要参数'}), 400
 
     share_code = custom_code if custom_code else generate_share_code()
-    
-    # 使用 timezone.utc 获取 UTC 时间
-    expiration_time = datetime.now(timezone.utc) + timedelta(minutes=int(share_time))
+    expiration_time = datetime.utcnow() + timedelta(minutes=int(share_time))
 
     new_share = CodeShare(share_code=share_code, code_content=code_content, expiration_time=expiration_time)
     db.session.add(new_share)
@@ -53,19 +51,16 @@ def view_code(share_code):
     
     if not share:
         abort(404)
-
-    # 将从数据库中取出的 expiration_time 也转换为带有 UTC 时区信息的 datetime 对象
-    expiration_time_aware = share.expiration_time.replace(tzinfo=timezone.utc)
-
-    # 现在两个 datetime 对象都有时区信息，可以进行比较
-    if datetime.now(timezone.utc) > expiration_time_aware:
+    
+    if datetime.utcnow() > share.expiration_time:
         db.session.delete(share)
         db.session.commit()
         abort(404)
-
-    # 使用 timestamp() 方法获取毫秒级时间戳
-    expiration_timestamp_ms = int(expiration_time_aware.timestamp() * 1000)
-    return render_template('view.html', code=share.code_content, expiration_time=expiration_timestamp_ms) 
+    
+    # 将expiration_time转换为ISO格式的字符串
+    expiration_time_iso = share.expiration_time.isoformat()
+    
+    return render_template('view.html', code=share.code_content, expiration_time=expiration_time_iso)
 
 @app.route('/destroy', methods=['POST'])
 def destroy_code():
@@ -91,7 +86,7 @@ def destroy_code():
 
 @app.errorhandler(404)
 def not_found_error(error):
-    return jsonify({'error': '未找到请求的资源可能是代码过期或被销毁'}), 404
+    return jsonify({'error': '未找到请求的资源'}), 404
 
 @app.errorhandler(500)
 def internal_error(error):

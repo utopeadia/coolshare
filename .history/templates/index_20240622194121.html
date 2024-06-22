@@ -16,11 +16,16 @@
 		<div class="container">
 			<h1>CoolSHARE</h1>
 
-			<form id="jump-form">
+			<form
+				id="jump-form"
+				action="/view"
+				method="get"
+			>
 				<div class="input-group">
 					<input
 						type="text"
 						id="share-code-input"
+						name="code"
 						placeholder="请输入分享码"
 					/>
 					<button
@@ -79,7 +84,6 @@
 				<p>您的分享链接: <span id="share-link"></span></p>
 				<p>此代码片段将在 <span id="countdown"></span> 后过期。</p>
 				<button id="copy-button">复制链接</button>
-				<button id="destroy-button">立即销毁</button>
 			</div>
 		</div>
 

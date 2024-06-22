@@ -75,7 +75,7 @@
 				});
 
 				const expirationTimeStr = "{{ expiration_time }}";
-				const expirationTime = new Date(Number(expirationTimeStr));
+				const expirationTime = new Date(expirationTimeStr).getTime();
 
 				function updateCountdown() {
 					const now = new Date().getTime();

@@ -64,7 +64,8 @@ def view_code(share_code):
         abort(404)
 
     # 使用 timestamp() 方法获取毫秒级时间戳
-    expiration_timestamp_ms = int(expiration_time_aware.timestamp() * 1000)
+    expiration_timestamp_ms = int(share.expiration_time.timestamp() * 1000)
+
     return render_template('view.html', code=share.code_content, expiration_time=expiration_timestamp_ms) 
 
 @app.route('/destroy', methods=['POST'])
@@ -91,7 +92,7 @@ def destroy_code():
 
 @app.errorhandler(404)
 def not_found_error(error):
-    return jsonify({'error': '未找到请求的资源可能是代码过期或被销毁'}), 404
+    return jsonify({'error': '未找到请求的资源'}), 404
 
 @app.errorhandler(500)
 def internal_error(error):
