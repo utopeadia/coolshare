@@ -36,7 +36,7 @@
 				const codeContainer = document.getElementById('view-code');
 				const code = codeContainer.textContent; // 获取原始代码文本
 				codeContainer.textContent = code; // 使用textContent直接设置，不进行HTML解析
-				//hljs.highlightElement(codeContainer); // 使用highlight.js进行代码高亮
+				hljs.highlightElement(codeContainer); // 使用highlight.js进行代码高亮
 
 				const copyButton = document.getElementById('copy-button');
 				const destroyButton = document.getElementById('destroy-button');
