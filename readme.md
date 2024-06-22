@@ -1,8 +1,26 @@
 CoolShare - A very lightweight and cool code snippet sharing tool </br>
 CoolShare--非常非常轻量级、非常非常酷的代码片段共享工具</br>
 ## 也许现在可以使用了
-
+### 特性
 20240622更新</br>
+
+* 开箱即用
+* 简单轻量（使用了flask或许也不轻量）</br>
+  项目目录如下 The project directory is as follows：</br>
+	├──app </br>
+	│   ├── app.py</br>
+	│   ├── templates/</br>
+	│   │   ├── index.html</br>
+	│   │   ├── view.html</br>
+	│   ├── static/</br>
+	│   │   ├── style.css</br>
+	│   │   ├── script.js</br>
+	├──readme.md</br>
+	├──requirements.txt</br>
+	├──Dockerfile</br>
+
+* 部署方便
+### docker部署方法
 只需要暴露5000端口即可</br>
 如果需要持久化只需要持久化sqlite db文件即可</br>
 例如：</br>
@@ -31,7 +49,6 @@ docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/cool
 
 * **软件的显著位置:** 例如软件的启动界面、关于页面、设置页面等。
 * **相关文档:** 包括但不限于 README 文件、用户手册、技术文档等。
-
 **示例：**
 
 ```
