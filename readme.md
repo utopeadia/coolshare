@@ -1,5 +1,5 @@
-## ~Under development, not yet available~
-
+CoolShare - A very lightweight and cool code snippet sharing tool
+CoolShare--非常非常轻量级、非常非常酷的代码片段共享工具
 ## 也许现在可以使用了
 
 20240622更新
@@ -17,3 +17,4 @@ docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/cool
 ![1719061402241](assets/1719061402241.png)
 ![1719061415916](assets/1719061415916.png)
 ![1719061427768](assets/1719061427768.png)
+## ~Under development, not yet available~
