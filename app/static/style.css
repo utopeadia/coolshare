@@ -23,7 +23,7 @@ h1 {
 }
 
 textarea {
-	display: block; /* 移除 flex 布局 */
+	display: block;
 	width: 100%;
 	height: 180px;
 	padding: 12px;
@@ -31,9 +31,8 @@ textarea {
 	border-radius: 4px;
 	resize: vertical;
 	font-family: "Courier New", Courier, monospace;
-	box-sizing: border-box; /*  确保 padding 和 border 包含在元素宽度内 */
-	word-break: break-all; /*  允许长单词在任意位置换行 */
-}
+	box-sizing: border-box;
+	word-break: break-all;
 /* 输入框组 */
 .input-group {
 	display: flex;
@@ -73,14 +72,14 @@ textarea {
 .option {
 	display: flex;
 	align-items: center;
-	margin-bottom: 10px; /* 选项之间的间距 */
-	flex: 1 1 45%; /*  每个选项占据大约一半宽度 */
+	margin-bottom: 10px;
+	flex: 1 1 45%;
 }
 
 .option label {
 	margin-right: 8px;
 	color: #555;
-	white-space: nowrap; /* 防止标签文本换行 */
+	white-space: nowrap;
 }
 
 .option input,
@@ -115,7 +114,7 @@ button {
 }
 
 #destroy-button {
-	background-color: #ced4da; /* 使用更柔和的颜色 */
+	background-color: #ced4da;
 	color: #333;
 }
 
@@ -146,10 +145,9 @@ button {
 	background-color: #218838;
 }
 
-/*  媒体查询：针对窄屏进行调整 */
 @media (max-width: 500px) {
 	.option {
-		flex: 1 1 100%; /* 在小屏幕上，每个选项占据整行 */
+		flex: 1 1 100%;
 		margin-bottom: 10px;
 	}
 }
