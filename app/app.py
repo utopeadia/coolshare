@@ -56,7 +56,7 @@ def rate_limit(func):
 
         # 检查请求次数是否超过限制
         if data["count"] >= REQUEST_LIMIT:
-            data["last_reset"] = current_time + PENALTY_DURATION  # 设置惩罚到期时间
+            data["last_reset"] = current_time + (PENALTY_DURATION * 60)  # 设置惩罚到期时间
             abort(
                 429,
                 description=f"Too Many Requests. You have been rate limited for {PENALTY_DURATION} minutes.",
