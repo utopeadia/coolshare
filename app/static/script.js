@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const shareCodeInput = document.getElementById("share-code-input");
 
     timeSelect.addEventListener("change", () => {
-        customTimeInput.style.display = timeSelect.value === "custom" ? "inline-block" : "none";
+        customTimeInput.style.display =
+            timeSelect.value === "custom" ? "inline-block" : "none";
     });
 
     jumpForm.addEventListener("submit", (e) => {
@@ -116,7 +117,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const updateCountdown = () => {
             const minutes = Math.floor(remainingTime / 60);
             const seconds = remainingTime % 60;
-            countdownSpan.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+            countdownSpan.textContent = `${minutes}:${seconds
+                .toString()
+                .padStart(2, "0")}`;
 
             if (remainingTime <= 0) {
                 clearInterval(countdownInterval);

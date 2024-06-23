@@ -1,103 +1,67 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-	<head>
-		<meta charset="UTF-8" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0"
-		/>
-		<title>CoolShare</title>
-		<link
-			rel="stylesheet"
-			href="{{ url_for('static', filename='style.css') }}"
-		/>
-		<link
-			rel="icon"
-			href="{{ url_for('static', filename='logo.png') }}"
-			type="image/png"
-		/>
-	</head>
-	<body>
-		<div class="container">
-			<div class="header">
-				<img
-					src="{{ url_for('static', filename='logo.png') }}"
-					alt="Logo"
-					class="logo"
-				/>
-				<h1>CoolShare</h1>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>CoolShare</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+	<link rel="icon" href="{{ url_for('static', filename='logo.png') }}" type="image/png" />
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+			<img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo" />
+			<h1>CoolShare</h1>
+		</div>
+
+		<form id="jump-form">
+			<div class="input-group">
+				<input type="text" id="share-code-input" placeholder="请输入分享码" />
+				<button type="submit" id="jump-button">
+					跳转
+				</button>
 			</div>
+		</form>
 
-			<form id="jump-form">
-				<div class="input-group">
-					<input
-						type="text"
-						id="share-code-input"
-						placeholder="请输入分享码"
-					/>
-					<button
-						type="submit"
-						id="jump-button"
-					>
-						跳转
-					</button>
-				</div>
-			</form>
+		<textarea id="code-input" placeholder="请输入代码片段" spellcheck="false"></textarea>
 
-			<textarea
-				id="code-input"
-				placeholder="请输入代码片段"
-				spellcheck="false"
-			></textarea>
-
-			<div class="options">
-				<div class="option">
-					<label for="custom-code">自定义分享码 (可选):</label>
-					<input
-						type="text"
-						id="custom-code"
-						placeholder="6位字母或数字"
-						maxlength="6"
-					/>
-				</div>
-				<div class="option">
-					<label for="time-select">分享时间:</label>
-					<select id="time-select">
-						<option value="3">3 分钟</option>
-						<option value="10">10 分钟</option>
-						<option value="30" selected>30 分钟</option>
-						<option value="60">1 小时</option>
-						<option value="180">3 小时</option>
-						<option value="1440">1 天</option>
-						<option value="custom">自定义 (分钟)</option>
-					</select>
-					<input
-						type="number"
-						id="custom-time"
-						placeholder="自定义时间 (分钟)"
-						min="1"
-						max="28800"
-						style="display: none"
-					/>
-				</div>
+		<div class="options">
+			<div class="option">
+				<label for="custom-code">自定义分享码 (可选):</label>
+				<input type="text" id="custom-code" placeholder="6位字母或数字" maxlength="6" />
 			</div>
-
-			<div class="button-group">
-				<button id="share-button">分享</button>
-			</div>
-
-			<div
-				id="result"
-				class="hidden"
-			>
-				<h2 class="success">分享成功！</h2>
-				<p>您的分享链接: <span id="share-link"></span></p>
-				<p>此代码片段将在 <span id="countdown"></span> 后过期。</p>
-				<button id="copy-button" data-clipboard-target="#share-link">复制链接</button>
-				<button id="destroy-button">立即销毁</button>
+			<div class="option">
+				<label for="time-select">分享时间:</label>
+				<select id="time-select">
+					<option value="3">3 分钟</option>
+					<option value="10">10 分钟</option>
+					<option value="30" selected>30 分钟</option>
+					<option value="60">1 小时</option>
+					<option value="180">3 小时</option>
+					<option value="1440">1 天</option>
+					<option value="custom">自定义 (分钟)</option>
+				</select>
+				<input type="number" id="custom-time" placeholder="自定义时间 (分钟)" min="1" max="28800"
+					style="display: none" />
 			</div>
 		</div>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.js"></script>
-		<script src="/static/script.js"></script>
-	</body>
+
+		<div class="button-group">
+			<button id="share-button">分享</button>
+		</div>
+
+		<div id="result" class="hidden">
+			<h2 class="success">分享成功！</h2>
+			<p>您的分享链接: <span id="share-link"></span></p>
+			<p>此代码片段将在 <span id="countdown"></span> 后过期。</p>
+			<button id="copy-button" data-clipboard-target="#share-link">复制链接</button>
+			<button id="destroy-button">立即销毁</button>
+		</div>
+	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.js"></script>
+	<script src="/static/script.js"></script>
+</body>
+
 </html>

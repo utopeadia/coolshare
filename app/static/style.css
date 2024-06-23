@@ -15,14 +15,18 @@ body {
 	border-radius: 8px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .header {
 	display: flex;
-	align-items: center; /* 垂直居中对齐 */
-	justify-content: center; /* 水平居中对齐 */
+	align-items: center;
+	/* 垂直居中对齐 */
+	justify-content: center;
+	/* 水平居中对齐 */
 }
 
 .logo {
-	height: 3em; /* 与标题文字大小相同 */
+	height: 3em;
+	/* 与标题文字大小相同 */
 	margin-right: 5px;
 }
 
@@ -44,6 +48,7 @@ textarea {
 	box-sizing: border-box;
 	word-break: break-all;
 }
+
 /* 输入框组 */
 .input-group {
 	display: flex;
