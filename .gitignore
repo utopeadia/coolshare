@@ -1,0 +1,114 @@
+# Windows image thumbnails
+Thumbs.db
+# User specific files
+*.DS_Store
+# Compiled Object files
+*.obj
+# Precompiled Headers
+*.pch
+# Compiled Source Files
+*.sdf
+# Compiled Resource Library
+*.res
+# Build Results
+[Bb]in/
+[Dd]ebug/
+# Visual Studio intermediate files
+*.ncb
+*.suo
+*.user
+*.aps
+*.filters
+*.cache
+*.sln.cache
+# NuGet Packages
+*.nupkg
+# Packages Folder
+packages/*
+!packages/repositories.config
+# Visual Studio Solution User Options
+.vs/
+# Build log
+*.log
+# Windows Installer databases
+*.msi
+*.msm
+*.msp
+# Windows shortcuts
+*.lnk
+
+# macOS folder attributes
+.DS_Store
+# Xcode build files
+*.xcuserstate
+
+# Thumbnail cache
+.thumbnails/*
+# KDE directory preferences
+.directory
+# GNOME directory preferences
+.gnome*
+
+# IntelliJ IDEA project files
+.idea/
+# Editor-based Resting State
+*.iws
+
+# VS Code user settings
+.vscode/
+.history/
+
+# Sublime Text project files
+*.sublime-project
+*.sublime-workspace
+
+# Atom project files
+.atom/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+# PyInstaller
+#  Usually found in the output root, but can be controlled by the spec file
+#  https://www.pyinstaller.org/en/stable/spec-files.html#spec-file-options
+build_exe/
+# PyInstaller temp directories
+*.spec
+# Executables
+*.exe
+*.pkg
+# Jupyter Notebook check points
+.ipynb_checkpoints
+# IPython Notebook
+.ipython/profile_default/
+*.pyc
+*.pyo
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+# Diagnostic reports (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+# Runtime data
+
