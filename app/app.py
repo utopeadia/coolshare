@@ -37,6 +37,8 @@ class LRUCache(OrderedDict):
         super().__init__(*args, **kwargs)
 
     def __getitem__(self, key):
+        if key not in self:
+            self.__setitem__(key, {"count": 0, "last_reset": time.time()})
         value = super().__getitem__(key)
         self.move_to_end(key)  # 访问后移动到末尾
         return value
