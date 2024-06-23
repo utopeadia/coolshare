@@ -73,8 +73,11 @@ def rate_limit(func):
                     description=f"Too Many Requests. Try again in {remaining_penalty} seconds.",
                 )
 
-            # 如果超过时间窗口，重置计数
-            if current_time - data.get("last_reset", 0) > TIME_WINDOW:
+            # 如果是第一次请求或者超过时间窗口，重置计数
+            if (
+                "last_reset" not in data
+                or current_time - data["last_reset"] > TIME_WINDOW
+            ):
                 data["count"] = 0
                 data["last_reset"] = current_time
 
