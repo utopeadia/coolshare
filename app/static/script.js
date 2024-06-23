@@ -82,7 +82,7 @@ copyButton.addEventListener("click", () => {
 			alert("分享链接已复制到剪贴板");
 		})
 		.catch((err) => {
-			alert("Failed to copy: ", err);
+			alert("复制失败，请手动复制");
 		});
 });
 
