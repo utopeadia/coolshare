@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timedelta, timezone
 import random
 import string
+import base64
 import os
 
 MAX_SHARE_TIME = 4320
@@ -74,11 +75,12 @@ def view_code(share_code):
         abort(404)
 
     expiration_timestamp_ms = int(expiration_time_aware.timestamp() * 1000)
+    code_base64 = base64.b64encode(share.code_content.encode('utf-8')).decode('utf-8')
     return render_template(
         'view.html', 
-        code=share.code_content, 
+        code_base64=code_base64, 
         expiration_time=expiration_timestamp_ms
-    ) 
+    )
 
 @app.route('/destroy', methods=['POST'])
 def destroy_code():
