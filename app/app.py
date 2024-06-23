@@ -1,14 +1,14 @@
 from flask import Flask, request, jsonify, render_template, abort
 from flask_sqlalchemy import SQLAlchemy
-from collections import defaultdict
+from collections import OrderedDict
 from functools import wraps
-from threading import Timer, Lock
 import time
 from datetime import datetime, timedelta, timezone
 import random
 import string
 import base64
 import os
+import threading
 
 MAX_SHARE_TIME = float(os.environ.get("MAX_SHARE_TIME"))
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -27,10 +27,31 @@ CLEANUP_INTERVAL_MINUTES = int(
     os.environ.get("CLEANUP_INTERVAL_MINUTES")
 )  # 内存清理间隔（分钟）
 PENALTY_DURATION = int(os.environ.get("PENALTY_DURATION"))  # 惩罚持续时间（分钟）
+MAX_CACHE_SIZE = int(os.environ.get("MAX_CACHE_SIZE"))  # 设置最大缓存大小
 
 
-rate_limit_data = defaultdict(lambda: {"count": 0, "last_reset": time.time()})
-rate_limit_lock = Lock()
+# 使用 OrderedDict 实现 LRU 缓存
+class LRUCache(OrderedDict):
+    def __init__(self, maxsize=128, *args, **kwargs):
+        self.maxsize = maxsize
+        super().__init__(*args, **kwargs)
+
+    def __getitem__(self, key):
+        value = super().__getitem__(key)
+        self.move_to_end(key)  # 访问后移动到末尾
+        return value
+
+    def __setitem__(self, key, value):
+        if key in self:
+            self.move_to_end(key)  # 更新后移动到末尾
+        super().__setitem__(key, value)
+        if len(self) > self.maxsize:
+            oldest = next(iter(self))
+            del self[oldest]  # 删除最旧的项
+
+
+rate_limit_data = LRUCache(maxsize=MAX_CACHE_SIZE)
+rate_limit_lock = threading.RLock()  # 使用 RLock
 
 
 def rate_limit(func):
@@ -39,12 +60,11 @@ def rate_limit(func):
         ip_address = request.remote_addr
         current_time = time.time()
 
-        with rate_limit_lock:  # 使用锁保护对共享数据的访问
-            # 获取该IP的访问记录
+        with rate_limit_lock:
             data = rate_limit_data[ip_address]
 
             # 检查是否处于惩罚状态
-            if data["last_reset"] > current_time:
+            if data.get("last_reset", 0) > current_time:
                 remaining_penalty = int(data["last_reset"] - current_time)
                 abort(
                     429,
@@ -52,16 +72,22 @@ def rate_limit(func):
                 )
 
             # 如果超过时间窗口，重置计数
-            if current_time - data["last_reset"] > TIME_WINDOW:
+            if current_time - data.get("last_reset", 0) > TIME_WINDOW:
                 data["count"] = 0
                 data["last_reset"] = current_time
 
             # 检查请求次数是否超过限制
             if data["count"] >= REQUEST_LIMIT:
-                data["last_reset"] = current_time + (PENALTY_DURATION * 60)
+                # 指数退避算法
+                penalty_duration = PENALTY_DURATION * (
+                    2 ** (data["count"] - REQUEST_LIMIT)
+                )
+                data["last_reset"] = current_time + penalty_duration
+                remaining_penalty = int(data["last_reset"] - current_time)
                 abort(
                     429,
-                    description=f"Too Many Requests. You have been rate limited for {PENALTY_DURATION} minutes.",
+                    description=f"Too Many Requests. Try again in {remaining_penalty} seconds. "
+                    f"Your penalty duration will increase exponentially with repeated violations.",
                 )
 
             # 更新访问记录
@@ -72,27 +98,21 @@ def rate_limit(func):
     return decorated_function
 
 
-#  全局计时器
-cleanup_timer = None
-
-
 def cleanup_rate_limit_data():
-    global rate_limit_data, cleanup_timer
-    current_time = time.time()
-
-    with rate_limit_lock:
-        for ip_address, data in list(rate_limit_data.items()):
-            # 清理过期记录，包括惩罚状态的记录
-            if current_time - data["last_reset"] > TIME_WINDOW * 2:
-                del rate_limit_data[ip_address]
-
-    # 设置定时任务，将分钟转换为秒
-    cleanup_timer = Timer(CLEANUP_INTERVAL_MINUTES * 60, cleanup_rate_limit_data)
-    cleanup_timer.start()
+    global rate_limit_data
+    while True:  # 使用循环持续运行清理任务
+        current_time = time.time()
+        with rate_limit_lock:
+            for ip_address, data in list(rate_limit_data.items()):
+                if current_time - data["last_reset"] > TIME_WINDOW * 2:
+                    del rate_limit_data[ip_address]
+        time.sleep(CLEANUP_INTERVAL_MINUTES * 60)  # 精确控制休眠时间
 
 
-# 启动时启动清理任务
-cleanup_rate_limit_data()
+# 在单独的线程中启动清理任务
+cleanup_thread = threading.Thread(target=cleanup_rate_limit_data)
+cleanup_thread.daemon = True  # 设置为守护线程
+cleanup_thread.start()
 
 
 class CodeShare(db.Model):
