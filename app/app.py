@@ -65,7 +65,7 @@ def view_code(share_code):
     share = CodeShare.query.filter_by(share_code=share_code).first()
 
     if not share:
-        abort(404)
+        return render_template('404.html'), 404
 
     expiration_time_aware = share.expiration_time.replace(tzinfo=timezone.utc)
 
@@ -106,7 +106,7 @@ def destroy_code():
 
 @app.errorhandler(404)
 def not_found_error(error):
-    return jsonify({'error': '未找到请求的资源可能是代码过期或被销毁'}), 404
+    return render_template('404.html'), 404
 
 @app.errorhandler(500)
 def internal_error(error):
