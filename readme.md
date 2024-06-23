@@ -48,12 +48,10 @@ docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/cool
 | PENALTY_DURATION         | 基础的惩罚时长，每次超过限制，惩罚时长翻倍，默认值5，单位分钟 | false    |
 | MAX_CACHE_SIZE           | 计数器最大缓存值，默认值1000                                  | false    |
 
-![1719061304782](assets/1719061304782.png)
-![1719061332849](assets/1719061332849.png)
-![1719061384535](assets/1719061384535.png)
-![1719061402241](assets/1719061402241.png)
-![1719061415916](assets/1719061415916.png)
-![1719061427768](assets/1719061427768.png)
+![](assets/index.png)
+![](assets/share.png)
+![](assets/view.png)
+![](assets/404.png)
 
 ## ~Under development, not yet available~ 初步可用
 
