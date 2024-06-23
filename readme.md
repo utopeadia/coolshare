@@ -36,6 +36,14 @@
 ```bash
 docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/coolshare.db:/app/coolshare.db ghcr.io/utopeadia/coolshare:latest
 ```
+### 环境变量说明
+|变量名|说明|是否必须|
+|-|-|-|
+|MAX_SHARE_TIME|最长分享时间，默认值4320，单位分钟|false|
+|REQUEST_LIMIT|时间窗口内限制创建和删除总数量，默认值20|false|
+|TIME_WINDOW|时间窗口，默认值60，单位秒|false|
+|CLEANUP_INTERVAL_MINUTES|执行ip计数清理任务定时，默认值30，单位分钟|false|
+
 
 ![1719061304782](assets/1719061304782.png)
 ![1719061332849](assets/1719061332849.png)
