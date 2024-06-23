@@ -2,9 +2,7 @@
 <img src="assets/logo.png" alt="coolshare" width="200">
 </p>
 
-# CoolShare--非常轻量级、非常酷的代码片段共享工具
-
-## 也许现在可以使用了
+## CoolShare--非常轻量级、非常酷的代码片段共享工具
 
 ### 特性
 
