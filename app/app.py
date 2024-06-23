@@ -1,17 +1,73 @@
-from flask import Flask, request, jsonify, render_template, redirect, abort
+from flask import Flask, request, jsonify, render_template, abort
 from flask_sqlalchemy import SQLAlchemy
+from collections import defaultdict
+from functools import wraps
+from threading import Timer
+import time
 from datetime import datetime, timedelta, timezone
 import random
 import string
 import base64
 import os
 
-MAX_SHARE_TIME = 4320
+MAX_SHARE_TIME = os.environ.get('MAX_SHARE_TIME')
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'coolshare.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+rate_limit_data = defaultdict(lambda: {"count": 0, "last_reset": time.time()})
+
+# 限速参数
+REQUEST_LIMIT = os.environ.get('REQUEST_LIMIT')  # 每分钟允许的请求次数
+TIME_WINDOW = os.environ.get('TIME_WINDOW')  # 时间窗口（秒）
+# 设置内存回收参数
+CLEANUP_INTERVAL_MINUTES = os.environ.get('CLEANUP_INTERVAL_MINUTES')  # 内存清理间隔（分钟）
+
+def rate_limit(func):
+    """
+    IP限速装饰器
+    """
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        ip_address = request.remote_addr
+        current_time = time.time()
+
+        # 获取该IP的访问记录
+        data = rate_limit_data[ip_address]
+
+        # 如果超过时间窗口，重置计数和时间
+        if current_time - data["last_reset"] > TIME_WINDOW:
+            data["count"] = 0
+            data["last_reset"] = current_time
+
+        # 检查请求次数是否超过限制
+        if data["count"] >= REQUEST_LIMIT:
+            abort(429, description="Too Many Requests")  # 返回 429 Too Many Requests 错误
+
+        # 更新访问记录
+        data["count"] += 1
+
+        return func(*args, **kwargs)
+    return decorated_function
+
+
+def cleanup_rate_limit_data():
+    """
+    清理过期的访问记录
+    """
+    global rate_limit_data
+    current_time = time.time()
+    for ip_address, data in list(rate_limit_data.items()):
+        if current_time - data["last_reset"] > TIME_WINDOW * 2:  # 清理超过两倍时间窗口的记录
+            del rate_limit_data[ip_address]
+
+    # 定时执行清理任务，将分钟转换为秒
+    Timer(CLEANUP_INTERVAL_MINUTES * 60, cleanup_rate_limit_data).start() 
+
+# 启动时执行一次清理任务，并设置定时任务
+cleanup_rate_limit_data() 
 
 class CodeShare(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -30,6 +86,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/share', methods=['POST'])
+@rate_limit
 def share_code():
     data = request.json
     code_content = data.get('code')
@@ -83,6 +140,7 @@ def view_code(share_code):
     )
 
 @app.route('/destroy', methods=['POST'])
+@rate_limit
 def destroy_code():
     data = request.json
     share_code = data.get('share_code')
@@ -112,6 +170,10 @@ def not_found_error(error):
 def internal_error(error):
     db.session.rollback()
     return jsonify({'error': '服务器内部错误'}), 500
+    
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify({'error': '操作超限，请稍后再试'}), 429
 
 if __name__ == '__main__':
     with app.app_context():

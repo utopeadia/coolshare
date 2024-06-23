@@ -11,6 +11,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 复制应用代码
 COPY ./app /app
 
+ENV MAX_SHARE_TIME=4320
+ENV REQUEST_LIMIT=20
+ENV TIME_WINDOW=60
+ENV CLEANUP_INTERVAL_MINUTES=30
+
 # 暴露 Flask 应用端口
 EXPOSE 5000
 
