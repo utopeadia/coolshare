@@ -20,8 +20,9 @@
 			href="{{ url_for('static', filename='logo.png') }}"
 			type="image/png"
 		/>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/go.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.js"></script>
 	</head>
 	<body>
 		<div class="container">
@@ -37,7 +38,7 @@
 				<pre><code id="view-code"></code></pre>
 			</div>
 			<div class="button-group">
-				<button id="copy-button">复制代码</button>
+				<button id="copy-button" data-clipboard-target="#view-code">复制代码</button>
 				<button id="destroy-button">立即销毁</button>
 			</div>
 			<div id="countdown"></div>
@@ -63,20 +64,15 @@
 				codeContainer.textContent = originalCode;
 				hljs.highlightElement(codeContainer);
 
-				const copyButton = document.getElementById("copy-button");
 				const destroyButton = document.getElementById("destroy-button");
 				const countdownDiv = document.getElementById("countdown");
 
-				copyButton.addEventListener("click", () => {
-					navigator.clipboard.writeText(originalCode)
-						.then(
-						() => {
-							alert("代码已复制到剪贴板");
-						},
-						.catch((err) => {
-							alert("复制失败，请手动复制");
-						}
-					);
+				const clipboard = new ClipboardJS("#copy-button");
+				clipboard.on("success", function (e) {
+					alert("代码已复制到剪贴板");
+				});
+				clipboard.on("error", function (e) {
+					alert("复制失败，请手动复制");
 				});
 
 				destroyButton.addEventListener("click", async () => {
