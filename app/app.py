@@ -30,6 +30,7 @@ PENALTY_DURATION = int(os.environ.get("PENALTY_DURATION"))  # 惩罚持续时间
 
 
 rate_limit_data = defaultdict(lambda: {"count": 0, "last_reset": time.time()})
+rate_limit_lock = Lock()
 
 
 def rate_limit(func):
@@ -38,32 +39,33 @@ def rate_limit(func):
         ip_address = request.remote_addr
         current_time = time.time()
 
-        # 获取该IP的访问记录
-        data = rate_limit_data[ip_address]
+        with rate_limit_lock:  # 使用锁保护对共享数据的访问
+            # 获取该IP的访问记录
+            data = rate_limit_data[ip_address]
 
-        # 检查是否处于惩罚状态
-        if data["last_reset"] > current_time:
-            remaining_penalty = int(data["last_reset"] - current_time)
-            abort(
-                429,
-                description=f"Too Many Requests. Try again in {remaining_penalty} seconds.",
-            )
+            # 检查是否处于惩罚状态
+            if data["last_reset"] > current_time:
+                remaining_penalty = int(data["last_reset"] - current_time)
+                abort(
+                    429,
+                    description=f"Too Many Requests. Try again in {remaining_penalty} seconds.",
+                )
 
-        # 如果超过时间窗口，重置计数
-        if current_time - data["last_reset"] > TIME_WINDOW:
-            data["count"] = 0
-            data["last_reset"] = current_time
+            # 如果超过时间窗口，重置计数
+            if current_time - data["last_reset"] > TIME_WINDOW:
+                data["count"] = 0
+                data["last_reset"] = current_time
 
-        # 检查请求次数是否超过限制
-        if data["count"] >= REQUEST_LIMIT:
-            data["last_reset"] = current_time + (PENALTY_DURATION * 60)  # 设置惩罚到期时间
-            abort(
-                429,
-                description=f"Too Many Requests. You have been rate limited for {PENALTY_DURATION} minutes.",
-            )
+            # 检查请求次数是否超过限制
+            if data["count"] >= REQUEST_LIMIT:
+                data["last_reset"] = current_time + (PENALTY_DURATION * 60)
+                abort(
+                    429,
+                    description=f"Too Many Requests. You have been rate limited for {PENALTY_DURATION} minutes.",
+                )
 
-        # 更新访问记录
-        data["count"] += 1
+            # 更新访问记录
+            data["count"] += 1
 
         return func(*args, **kwargs)
 
@@ -77,13 +79,12 @@ cleanup_timer = None
 def cleanup_rate_limit_data():
     global rate_limit_data, cleanup_timer
     current_time = time.time()
-    for ip_address, data in list(rate_limit_data.items()):
-        # 只清理没有处于惩罚状态的记录
-        if (
-            current_time - data["last_reset"] > TIME_WINDOW * 2
-            and data["last_reset"] < current_time
-        ):
-            del rate_limit_data[ip_address]
+
+    with rate_limit_lock:
+        for ip_address, data in list(rate_limit_data.items()):
+            # 清理过期记录，包括惩罚状态的记录
+            if current_time - data["last_reset"] > TIME_WINDOW * 2:
+                del rate_limit_data[ip_address]
 
     # 设置定时任务，将分钟转换为秒
     cleanup_timer = Timer(CLEANUP_INTERVAL_MINUTES * 60, cleanup_rate_limit_data)
@@ -207,7 +208,15 @@ def internal_error(error):
 
 @app.errorhandler(429)
 def ratelimit_handler(e):
-    return jsonify({"error": "操作超限，请稍后再试"}), 429
+    return (
+        jsonify(
+            {
+                "error": "操作超限，请稍后再试",
+                "retry-after": e.description.split("in ")[1],
+            }
+        ),
+        429,
+    )
 
 
 if __name__ == "__main__":
