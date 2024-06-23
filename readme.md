@@ -6,11 +6,11 @@
 
 ### 特性
 
-20240622更新`</br>`
+20240622更新</br>
 
 * 开箱即用
-* 简单轻量（使用了flask或许也不轻量）`</br>`
-  项目目录如下：`</br>`
+* 简单轻量（使用了flask或许也不轻量）</br>
+  项目目录如下：</br>
   ```
   │  
   ├──app/
@@ -29,9 +29,9 @@
 
 ### docker部署方法
 
-只需要暴露5000端口即可`</br>`
-如果需要持久化只需要持久化sqlite db文件即可`</br>`
-例如：`</br>`
+只需要暴露5000端口即可</br>
+如果需要持久化只需要持久化sqlite db文件即可</br>
+例如：</br>
 
 ```bash
 docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/coolshare.db:/app/coolshare.db ghcr.io/utopeadia/coolshare:latest
