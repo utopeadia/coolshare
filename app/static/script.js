@@ -25,14 +25,19 @@ jumpForm.addEventListener("submit", (e) => {
 });
 
 shareButton.addEventListener("click", async () => {
-	const code = codeInput.value;
+	const code = codeInput.value.trim();
 	const customCode = customCodeInput.value.trim();
 	let shareTime;
 
+	if (code === "") {
+		alert("请输入代码片段");
+		return;
+	}
+
 	if (timeSelect.value === "custom") {
 		shareTime = parseInt(customTimeInput.value);
-		if (isNaN(shareTime) || shareTime <= 0 || shareTime > 28800) {
-			alert("自定义时间必须为 1 到 28800 之间的数字 (分钟)");
+		if (!Number.isInteger(shareTime) || shareTime <= 0 || shareTime > 28800) {
+			alert("自定义时间必须为 1 到 28800 之间的整数 (分钟)");
 			return;
 		}
 	} else {
@@ -40,6 +45,7 @@ shareButton.addEventListener("click", async () => {
 	}
 
 	try {
+		shareButton.disabled = true;
 		const response = await fetch("/share", {
 			method: "POST",
 			headers: {
@@ -64,6 +70,8 @@ shareButton.addEventListener("click", async () => {
 	} catch (error) {
 		console.error("Error:", error);
 		alert("分享失败，请稍后再试");
+	} finally {
+		shareButton.disabled = false;
 	}
 });
 
@@ -74,7 +82,7 @@ copyButton.addEventListener("click", () => {
 			alert("分享链接已复制到剪贴板");
 		})
 		.catch((err) => {
-			console.error("Failed to copy: ", err);
+			alert("Failed to copy: ", err);
 		});
 });
 

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 	<head>
 		<meta charset="UTF-8" />
 		<meta
 			name="viewport"
 			content="width=device-width, initial-scale=1.0"
 		/>
-		<title>CoolShare ViewCode</title>
+		<title>CoolShare CodeView</title>
 		<link
 			rel="stylesheet"
 			href="{{ url_for('static', filename='style.css') }}"
@@ -15,11 +15,23 @@
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css"
 		/>
+		<link
+			rel="icon"
+			href="{{ url_for('static', filename='logo.png') }}"
+			type="image/png"
+		/>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
 	</head>
 	<body>
 		<div class="container">
-			<h1>CoolShare - View Code</h1>
+			<div class="header">
+				<img
+					src="{{ url_for('static', filename='logo.png') }}"
+					alt="Logo"
+					class="logo"
+				/>
+				<h1>CoolShare-CodeView</h1>
+			</div>
 			<div class="code-container">
 				<pre><code id="view-code"></code></pre>
 			</div>
@@ -64,7 +76,7 @@
 							alert("代码已复制到剪贴板");
 						},
 						(err) => {
-							console.error("无法复制代码: ", err);
+							alert("Failed to copy: ", err);
 						}
 					);
 				});

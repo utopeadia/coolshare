@@ -15,6 +15,16 @@ body {
 	border-radius: 8px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+.header {
+	display: flex;
+	align-items: center; /* 垂直居中对齐 */
+	justify-content: center; /* 水平居中对齐 */
+}
+
+.logo {
+	height: 3em; /* 与标题文字大小相同 */
+	margin-right: 5px;
+}
 
 h1 {
 	text-align: center;
@@ -33,6 +43,7 @@ textarea {
 	font-family: "Courier New", Courier, monospace;
 	box-sizing: border-box;
 	word-break: break-all;
+}
 /* 输入框组 */
 .input-group {
 	display: flex;
@@ -63,7 +74,7 @@ textarea {
 /* 选项 */
 .options {
 	display: flex;
-	flex-wrap: wrap; /* 允许换行 */
+	flex-wrap: wrap;
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 15px;
@@ -123,6 +134,10 @@ button {
 }
 
 /* 结果区域 */
+.hidden {
+	display: none;
+}
+
 #result {
 	margin-top: 20px;
 	padding: 20px;

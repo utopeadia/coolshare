@@ -1,20 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 	<head>
 		<meta charset="UTF-8" />
 		<meta
 			name="viewport"
 			content="width=device-width, initial-scale=1.0"
 		/>
-		<title>CoolSHARE</title>
+		<title>CoolShare</title>
 		<link
 			rel="stylesheet"
-			href="/static/style.css"
+			href="{{ url_for('static', filename='style.css') }}"
+		/>
+		<link
+			rel="icon"
+			href="{{ url_for('static', filename='logo.png') }}"
+			type="image/png"
 		/>
 	</head>
 	<body>
 		<div class="container">
-			<h1>CoolSHARE</h1>
+			<div class="header">
+				<img
+					src="{{ url_for('static', filename='logo.png') }}"
+					alt="Logo"
+					class="logo"
+				/>
+				<h1>CoolShare</h1>
+			</div>
 
 			<form id="jump-form">
 				<div class="input-group">
