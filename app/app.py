@@ -206,19 +206,6 @@ def internal_error(error):
     return jsonify({"error": "服务器内部错误"}), 500
 
 
-@app.errorhandler(429)
-def ratelimit_handler(e):
-    return (
-        jsonify(
-            {
-                "error": "操作超限，请稍后再试",
-                "retry-after": e.description.split("in ")[1],
-            }
-        ),
-        429,
-    )
-
-
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
