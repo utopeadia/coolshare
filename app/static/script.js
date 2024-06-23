@@ -54,6 +54,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify({ code, customCode, shareTime }),
             });
+            
+            if (response.status === 429) {
+                alert("操作超限，请稍后再试");
+                return; // 停止后续操作
+            }
 
             const data = await response.json();
 
@@ -99,6 +104,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify({ share_code: shareCode }),
             });
+            
+            if (response.status === 429) {
+                alert("操作超限，请稍后再试");
+                return; // 停止后续操作
+            }
 
             if (response.ok) {
                 alert("代码片段已销毁");
