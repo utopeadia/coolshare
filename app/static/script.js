@@ -37,8 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (timeSelect.value === "custom") {
             shareTime = parseInt(customTimeInput.value);
-            if (!Number.isInteger(shareTime) || shareTime <= 0 || shareTime > 28800) {
-                alert("自定义时间必须为 1 到 28800 之间的整数 (分钟)");
+            if (!Number.isInteger(shareTime) || shareTime <= 0) {
+                alert("自定义时间必须为 1 到管理员最长允许时间之间的整数 (分钟)");
                 return;
             }
         } else {
