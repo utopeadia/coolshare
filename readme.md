@@ -2,35 +2,38 @@
 <img src="assets/logo.png" alt="coolshare" width="200">
 </p>
 
-# CoolShare--非常轻量级、非常酷的代码片段共享工具 
+# CoolShare--非常轻量级、非常酷的代码片段共享工具
 
 ## 也许现在可以使用了
 
 ### 特性
 
-20240622更新</br>
+20240622更新`</br>`
 
 * 开箱即用
-* 简单轻量（使用了flask或许也不轻量）</br>
-  项目目录如下 The project directory is as follows：</br>
-  ├──app </br>
-  │   ├── app.py</br>
-  │   ├── templates/</br>
-  │   │   ├── index.html</br>
-  │   │   ├── view.html</br>
-  │   ├── static/</br>
-  │   │   ├── style.css</br>
-  │   │   ├── script.js</br>
-  ├──readme.md</br>
-  ├──requirements.txt</br>
-  ├──Dockerfile</br>
+* 简单轻量（使用了flask或许也不轻量）`</br>`
+  项目目录如下：`</br>`
+  ```
+  │  
+  ├──app `</br>`
+  │   ├── app.py`</br>`
+  │   ├── templates/`</br>`
+  │   │   ├── index.html`</br>`
+  │   │   ├── view.html`</br>`
+  │   ├── static/`</br>`
+  │   │   ├── style.css`</br>`
+  │   │   ├── script.js`</br>`
+  ├──readme.md`</br>`
+  ├──requirements.txt`</br>`
+  ├──Dockerfile`</br>`
+  ```
 * 部署方便
 
 ### docker部署方法
 
-只需要暴露5000端口即可</br>
-如果需要持久化只需要持久化sqlite db文件即可</br>
-例如：</br>
+只需要暴露5000端口即可`</br>`
+如果需要持久化只需要持久化sqlite db文件即可`</br>`
+例如：`</br>`
 
 ```bash
 docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/coolshare.db:/app/coolshare.db ghcr.io/utopeadia/coolshare:latest
