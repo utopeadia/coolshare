@@ -21,6 +21,7 @@
 			type="image/png"
 		/>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/go.min.js"></script>
 	</head>
 	<body>
 		<div class="container">
@@ -41,29 +42,25 @@
 			</div>
 			<div id="countdown"></div>
 		</div>
-
 		<script>
 			document.addEventListener("DOMContentLoaded", (event) => {
 				const codeContainer = document.getElementById("view-code");
-				const originalCode = `{{ code | safe }}`;
-				function encodeHTML(str) {
-					return str.replace(
-						/[&<>'"]/g,
-						(tag) =>
-							({
-								"&": "&amp;",
-								"<": "&lt;",
-								">": "&gt;",
-								"'": "&#39;",
-								'"': "&quot;",
-							}[tag] || tag)
+				const originalCodeBase64 = "{{ code_base64 }}"; // 使用 Base64 编码后的代码内容
+
+				// Base64 解码函数
+				function base64Decode(str) {
+					return decodeURIComponent(
+						atob(str)
+							.split("")
+							.map(function (c) {
+								return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+							})
+							.join("")
 					);
 				}
 
-				// 编码HTML并设置内容
+				const originalCode = base64Decode(originalCodeBase64);
 				codeContainer.textContent = originalCode;
-
-				// highlight.js进行代码高亮
 				hljs.highlightElement(codeContainer);
 
 				const copyButton = document.getElementById("copy-button");
@@ -76,7 +73,7 @@
 							alert("代码已复制到剪贴板");
 						},
 						(err) => {
-							alert("Failed to copy: ", err);
+							alert("复制失败，请手动复制");
 						}
 					);
 				});
@@ -91,7 +88,6 @@
 							},
 							body: JSON.stringify({ share_code: shareCode }),
 						});
-
 						if (response.ok) {
 							alert("代码片段已销毁");
 							window.location.href = "/";
@@ -111,7 +107,6 @@
 				function updateCountdown() {
 					const now = new Date().getTime();
 					const timeLeft = expirationTime - now;
-
 					if (timeLeft > 0) {
 						const hours = Math.floor(
 							(timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -120,7 +115,6 @@
 							(timeLeft % (1000 * 60 * 60)) / (1000 * 60)
 						);
 						const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
 						countdownDiv.textContent = `代码将在 ${hours}小时 ${minutes}分钟 ${seconds}秒 后过期`;
 					} else {
 						countdownDiv.textContent = "代码已过期";
