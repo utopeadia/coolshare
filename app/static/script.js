@@ -75,15 +75,12 @@ shareButton.addEventListener("click", async () => {
 	}
 });
 
-copyButton.addEventListener("click", () => {
-	navigator.clipboard
-		.writeText(shareLinkSpan.textContent)
-		.then(() => {
-			alert("分享链接已复制到剪贴板");
-		})
-		.catch((err) => {
-			alert("复制失败，请手动复制");
-		});
+const clipboard = new ClipboardJS("#copy-button");
+clipboard.on("success", function (e) {
+	alert("代码已复制到剪贴板");
+});
+clipboard.on("error", function (e) {
+	alert("复制失败，请手动复制");
 });
 
 destroyButton.addEventListener("click", async () => {
