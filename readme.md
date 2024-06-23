@@ -43,7 +43,7 @@ docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/cool
 |REQUEST_LIMIT|时间窗口内限制创建和删除总数量，默认值20|false|
 |TIME_WINDOW|时间窗口，默认值60，单位秒|false|
 |CLEANUP_INTERVAL_MINUTES|执行ip计数清理任务定时，默认值30，单位分钟|false|
-|PENALTY_DURATION|超过请求限制罚时，默认值5，单位分钟|false|
+|PENALTY_DURATION|基础的惩罚时长，每次超过限制，惩罚时长翻倍，默认值5，单位分钟|false|
 |MAX_CACHE_SIZE|计数器最大缓存值，默认值1000|false|
 
 
