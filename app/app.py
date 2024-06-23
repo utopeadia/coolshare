@@ -16,6 +16,7 @@ app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'coolshare.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+float(MAX_SHARE_TIME)
 
 rate_limit_data = defaultdict(lambda: {"count": 0, "last_reset": time.time()})
 
@@ -24,6 +25,9 @@ REQUEST_LIMIT = os.environ.get('REQUEST_LIMIT')  # 每分钟允许的请求次�
 TIME_WINDOW = os.environ.get('TIME_WINDOW')  # 时间窗口（秒）
 # 设置内存回收参数
 CLEANUP_INTERVAL_MINUTES = os.environ.get('CLEANUP_INTERVAL_MINUTES')  # 内存清理间隔（分钟）
+float(REQUEST_LIMIT)
+float(TIME_WINDOW)
+float(CLEANUP_INTERVAL_MINUTES)
 
 def rate_limit(func):
     """
