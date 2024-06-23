@@ -44,7 +44,7 @@ docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/cool
 ![1719061415916](assets/1719061415916.png)
 ![1719061427768](assets/1719061427768.png)
 
-## ~Under development, not yet available~
+## ~Under development, not yet available~ 初步可用
 
 ## **开源许可证**
 
