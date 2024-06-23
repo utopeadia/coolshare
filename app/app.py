@@ -1,16 +1,16 @@
-from flask import Flask, request, jsonify, render_template, abort
-from flask_sqlalchemy import SQLAlchemy
-from collections import OrderedDict
-from functools import wraps
-import time
-from datetime import datetime, timedelta, timezone
+import os
 import random
 import string
 import base64
-import os
+import time
 import threading
+from flask import Flask, request, jsonify, render_template, abort
+from flask_sqlalchemy import SQLAlchemy
+from collections import OrderedDict, defaultdict
+from functools import wraps
+from datetime import datetime, timedelta, timezone
 
-MAX_SHARE_TIME = float(os.environ.get("MAX_SHARE_TIME"))
+MAX_SHARE_TIME = float(os.environ.get("MAX_SHARE_TIME", 4320))
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, static_url_path="/static", static_folder="static")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
@@ -20,40 +20,18 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 # 限速参数
-REQUEST_LIMIT = int(os.environ.get("REQUEST_LIMIT"))  # 每分钟允许的请求次数
-TIME_WINDOW = float(os.environ.get("TIME_WINDOW"))  # 时间窗口（秒）
+REQUEST_LIMIT = int(os.environ.get("REQUEST_LIMIT", 24))  # 每分钟允许的请求次数
+TIME_WINDOW = float(os.environ.get("TIME_WINDOW", 60))  # 时间窗口（秒）
 # 设置内存回收参数
 CLEANUP_INTERVAL_MINUTES = int(
-    os.environ.get("CLEANUP_INTERVAL_MINUTES")
+    os.environ.get("CLEANUP_INTERVAL_MINUTES", 30)
 )  # 内存清理间隔（分钟）
-PENALTY_DURATION = int(os.environ.get("PENALTY_DURATION"))  # 惩罚持续时间（分钟）
-MAX_CACHE_SIZE = int(os.environ.get("MAX_CACHE_SIZE"))  # 设置最大缓存大小
+PENALTY_DURATION = int(os.environ.get("PENALTY_DURATION", 5))  # 惩罚持续时间（分钟）
+MAX_CACHE_SIZE = int(os.environ.get("MAX_CACHE_SIZE", 1000))  # 设置最大缓存大小
 
-
-# 使用 OrderedDict 实现 LRU 缓存
-class LRUCache(OrderedDict):
-    def __init__(self, maxsize=128, *args, **kwargs):
-        self.maxsize = maxsize
-        super().__init__(*args, **kwargs)
-
-    def __getitem__(self, key):
-        if key not in self:
-            self.__setitem__(key, {"count": 0, "last_reset": time.time()})
-        value = super().__getitem__(key)
-        self.move_to_end(key)  # 访问后移动到末尾
-        return value
-
-    def __setitem__(self, key, value):
-        if key in self:
-            self.move_to_end(key)  # 更新后移动到末尾
-        super().__setitem__(key, value)
-        if len(self) > self.maxsize:
-            oldest = next(iter(self))
-            del self[oldest]  # 删除最旧的项
-
-
-rate_limit_data = LRUCache(maxsize=MAX_CACHE_SIZE)
-rate_limit_lock = threading.RLock()  # 使用 RLock
+# 使用 defaultdict 和 threading.Lock 实现线程安全的限速数据存储
+rate_limit_data = defaultdict(lambda: {"count": 0, "last_reset": 0})
+rate_limit_lock = threading.Lock()
 
 
 def rate_limit(func):
@@ -65,8 +43,8 @@ def rate_limit(func):
         with rate_limit_lock:
             data = rate_limit_data[ip_address]
 
-            # 检查是否处于惩罚状态
-            if data.get("last_reset", 0) > current_time:
+            # 检查是否处于惩罚状态, 修正判断条件
+            if data["last_reset"] >= current_time: 
                 remaining_penalty = int(data["last_reset"] - current_time)
                 abort(
                     429,
@@ -74,10 +52,7 @@ def rate_limit(func):
                 )
 
             # 如果是第一次请求或者超过时间窗口，重置计数
-            if (
-                "last_reset" not in data
-                or current_time - data["last_reset"] > TIME_WINDOW
-            ):
+            if current_time - data["last_reset"] > TIME_WINDOW:
                 data["count"] = 0
                 data["last_reset"] = current_time
 
@@ -105,13 +80,13 @@ def rate_limit(func):
 
 def cleanup_rate_limit_data():
     global rate_limit_data
-    while True:  # 使用循环持续运行清理任务
+    while True:
         current_time = time.time()
         with rate_limit_lock:
             for ip_address, data in list(rate_limit_data.items()):
                 if current_time - data["last_reset"] > TIME_WINDOW * 2:
                     del rate_limit_data[ip_address]
-        time.sleep(CLEANUP_INTERVAL_MINUTES * 60)  # 精确控制休眠时间
+        time.sleep(CLEANUP_INTERVAL_MINUTES * 60)
 
 
 # 在单独的线程中启动清理任务
