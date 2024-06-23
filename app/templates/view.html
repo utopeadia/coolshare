@@ -68,11 +68,12 @@
 				const countdownDiv = document.getElementById("countdown");
 
 				copyButton.addEventListener("click", () => {
-					navigator.clipboard.writeText(originalCode).then(
+					navigator.clipboard.writeText(originalCode)
+						.then(
 						() => {
 							alert("代码已复制到剪贴板");
 						},
-						(err) => {
+						.catch((err) => {
 							alert("复制失败，请手动复制");
 						}
 					);
