@@ -1,8 +1,20 @@
 <p align="center">
 <img src="assets/logo.png" alt="coolshare" width="200">
 </p>
+<h1 align="center">
+  CoolShare
+</h1>
 
-## CoolShare--非常轻量级、非常酷的代码片段共享工具
+<p align="center">
+ <a href="docs/README.en.md">English</a> | <a href="README.md">简体中文</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/utopeadia/coolshare/blob/main/LICENSE"><img src="GPL-3.0License.svg" alt="License"></a>
+  <a><img src="assets/PRs-welcome-brightgreen.svg"/></a>
+</p>
+
+`CoolShare`是一个非常轻量级、非常简单易用的代码片段分享工具，目的是通过快速的手段搭建个人和团队内部代码协作共享平台
 
 ### 特性
 
