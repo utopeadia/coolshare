@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/utopeadia/coolshare/blob/main/LICENSE"><img src="GPL-3.0License.svg" alt="License"></a>
+  <a href="https://github.com/utopeadia/coolshare/blob/main/LICENSE"><img src="assets/GPL-3.0License.svg" alt="License"></a>
   <a><img src="assets/PRs-welcome-brightgreen.svg"/></a>
 </p>
 
@@ -18,11 +18,10 @@
 
 ### 特性
 
-20240622更新</br>
-
+20240622更新
 * 开箱即用
 * 简单轻量（使用了flask或许也不轻量）</br>
-  项目目录如下：</br>
+  项目目录如下：
   ```
   │  
   ├──app/
@@ -37,21 +36,28 @@
   ├──requirements.txt
   ├──Dockerfile
   ```
-* 部署方便
 
 ### docker部署方法
 
-只需要暴露5000端口即可</br>
-如果需要持久化只需要持久化sqlite db文件即可</br>
-例如：</br>
+* 暴露5000端口
+* 持久化/app/coolshare.db数据库（可选）
+* 配置环境变量（可选）
+
+例如：
 
 ```bash
+docker run -d --name coolshare --restart always -p 5000:5000 ghcr.io/utopeadia/coolshare:latest
+```
+```bash
 docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/coolshare.db:/app/coolshare.db ghcr.io/utopeadia/coolshare:latest
+```
+```bash
+docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/coolshare.db:/app/coolshare.db -e MAX_SHARE_TIME=100 ghcr.io/utopeadia/coolshare:latest
 ```
 
 ### 环境变量说明
 
-| 变量名                   | 说明                                                          | 是否必须 |
+| 环境变量名                 | 说明                                                          | 是否必须 |
 | ------------------------ | ------------------------------------------------------------- | -------- |
 | MAX_SHARE_TIME           | 最长分享时间，默认值4320，单位分钟                            | false    |
 | REQUEST_LIMIT            | 时间窗口内限制创建和删除总数量，默认值24                      | false    |
