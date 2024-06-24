@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify({ code, customCode, shareTime }),
             });
-            
+
             if (response.status === 429) {
                 alert("操作超限，请稍后再试");
                 return; // 停止后续操作
@@ -81,13 +81,36 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // if (ClipboardJS.isSupported()) {
+    //     const clipboard = new ClipboardJS("#copy-button");
+    //     clipboard.on("success", function (e) {
+    //         alert("代码已复制到剪贴板");
+    //     });
+    //     clipboard.on("error", function (e) {
+    //         alert("复制失败，请手动复制");
+    //     });
+    // } else {
+    //     console.error("ClipboardJS not supported in this browser.");
+    // }
     if (ClipboardJS.isSupported()) {
         const clipboard = new ClipboardJS("#copy-button");
+        const copyMessage = document.getElementById("copy-message");
+
         clipboard.on("success", function (e) {
-            alert("代码已复制到剪贴板");
+            copyMessage.textContent = "代码已复制到剪贴板";
+            copyMessage.classList.add("success-message");
+            copyMessage.classList.remove("error-message");
+            copyMessage.style.display = "block";
+            setTimeout(() => {
+                copyMessage.style.display = "none";
+            }, 2000);
         });
+
         clipboard.on("error", function (e) {
-            alert("复制失败，请手动复制");
+            copyMessage.textContent = "复制失败，请手动复制";
+            copyMessage.classList.add("error-message");
+            copyMessage.classList.remove("success-message");
+            copyMessage.style.display = "block";
         });
     } else {
         console.error("ClipboardJS not supported in this browser.");
@@ -104,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 body: JSON.stringify({ share_code: shareCode }),
             });
-            
+
             if (response.status === 429) {
                 alert("操作超限，请稍后再试");
                 return; // 停止后续操作

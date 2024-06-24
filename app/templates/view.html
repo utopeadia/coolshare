@@ -26,6 +26,7 @@
 			<button id="copy-button" data-clipboard-target="#view-code">复制代码</button>
 			<button id="destroy-button">立即销毁</button>
 		</div>
+		<div id="copy-message"></div>
 		<div id="countdown"></div>
 	</div>
 	<script>
@@ -52,13 +53,29 @@
 			const destroyButton = document.getElementById("destroy-button");
 			const countdownDiv = document.getElementById("countdown");
 
-			const clipboard = new ClipboardJS("#copy-button");
-			clipboard.on("success", function (e) {
-				alert("代码已复制到剪贴板");
-			});
-			clipboard.on("error", function (e) {
-				alert("复制失败，请手动复制");
-			});
+			if (ClipboardJS.isSupported()) {
+				const clipboard = new ClipboardJS("#copy-button");
+				const copyMessage = document.getElementById("copy-message");
+
+				clipboard.on("success", function (e) {
+					copyMessage.textContent = "代码已复制到剪贴板";
+					copyMessage.classList.add("success-message");
+					copyMessage.classList.remove("error-message");
+					copyMessage.style.display = "block";
+					setTimeout(() => {
+						copyMessage.style.display = "none";
+					}, 2000);
+				});
+
+				clipboard.on("error", function (e) {
+					copyMessage.textContent = "复制失败，请手动复制";
+					copyMessage.classList.add("error-message");
+					copyMessage.classList.remove("success-message");
+					copyMessage.style.display = "block";
+				});
+			} else {
+				console.error("ClipboardJS not supported in this browser.");
+			}
 
 			destroyButton.addEventListener("click", async () => {
 				const shareCode = window.location.pathname.split("/").pop();

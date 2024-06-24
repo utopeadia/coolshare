@@ -111,6 +111,7 @@ textarea {
 	display: flex;
 	justify-content: space-between;
 	margin-top: 20px;
+	margin-bottom: 10px;
 }
 
 button {
@@ -137,6 +138,27 @@ button {
 
 #destroy-button:hover {
 	background-color: #adb5bd;
+}
+
+#copy-message {
+	display: none;
+	/* 默认隐藏 */
+	margin-top: 5px;
+	padding: 8px 12px;
+	border-radius: 4px;
+	font-size: 14px;
+}
+
+.success-message {
+	background-color: #d4edda;
+	color: #155724;
+	border: 1px solid #c3e6cb;
+}
+
+.error-message {
+	background-color: #f8d7da;
+	color: #721c24;
+	border: 1px solid #f5c6cb;
 }
 
 /* 结果区域 */
