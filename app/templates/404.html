@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>资源不可用</title>
+    <title id="pageTitle">资源不可用</title>
     <style>
         body {
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -66,17 +67,98 @@
         a:hover {
             background-color: #0062cc;
         }
+
+        /* 语言切换样式 */
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: inline-block;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .language-selector select {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            background-color: transparent;
+            font-size: 1em;
+            cursor: pointer;
+            appearance: none;
+            /* 移除默认箭头 */
+            width: 100px;
+            /* 设置下拉框宽度 */
+        }
+
+        /* 添加下拉箭头 */
+        .language-selector select::-ms-expand {
+            display: none;
+        }
+
+        .language-selector::after {
+            content: '\25BC';
+            /* 下拉箭头符号 */
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
     </style>
 </head>
+
 <body>
+    <div class="language-selector">
+        <select id="languageSelect">
+            <option value="zh-CN">简体中文</option>
+            <option value="en-US">English</option>
+        </select>
+    </div>
+
     <div class="container">
         <div class="error-icon">
-            <i class="fas fa-exclamation-circle"></i> 
+            <i class="fas fa-exclamation-circle"></i>
         </div>
-        <h1>资源不可用</h1>
-        <p>抱歉，您查找的内容已过期或被销毁。</p>
-        <a href="/">返回首页</a>
+        <h1 id="errorMessage">资源不可用</h1>
+        <p id="errorDescription">抱歉，您查找的内容已过期或被销毁。</p>
+        <a id="homeLink" href="/">返回首页</a>
     </div>
-    <script src="https://kit.fontawesome.com/e8a1f77f28.js"" crossorigin="anonymous"></script> 
+    <script src="https://kit.fontawesome.com/e8a1f77f28.js" crossorigin="anonymous"></script>
+    <script>
+        const langSelect = document.getElementById('languageSelect');
+        const messages = {
+            'zh-CN': {
+                pageTitle: '资源不可用',
+                errorMessage: '资源不可用',
+                errorDescription: '抱歉，您查找的内容已过期或被销毁。',
+                homeLink: '返回首页'
+            },
+            'en-US': {
+                pageTitle: 'Resource Unavailable',
+                errorMessage: 'Resource Unavailable',
+                errorDescription: 'Sorry, the resource you are looking for has expired or been destroyed.',
+                homeLink: 'Back to Home'
+            }
+        };
+
+        function setLanguage(lang) {
+            document.getElementById('pageTitle').innerText = messages[lang].pageTitle;
+            document.getElementById('errorMessage').innerText = messages[lang].errorMessage;
+            document.getElementById('errorDescription').innerText = messages[lang].errorDescription;
+            document.getElementById('homeLink').innerText = messages[lang].homeLink;
+        }
+
+        langSelect.addEventListener('change', function () {
+            setLanguage(this.value);
+        });
+
+        // 初始化页面语言
+        const defaultLang = navigator.language || navigator.userLanguage;
+        const initialLang = defaultLang.startsWith('en') ? 'en-US' : 'zh-CN';
+        langSelect.value = initialLang;
+        setLanguage(initialLang);
+    </script>
 </body>
 </html>
