@@ -62,7 +62,7 @@ docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/cool
 | MAX_SHARE_TIME           |Maximum sharing time, default value 4320, unit minutes| false    |
 | REQUEST_LIMIT            |Limits the total number of creations and deletions within the time window, with a default value of 24.| false    |
 | TIME_WINDOW              |Time window, default value 60, unit seconds| false    |
-| CLEANUP_INTERVAL_MINUTES |Execute IP count cleanup task timing, default value 30, unit minute| false    |
+| CLEANUP_INTERVAL_MINUTES |Execute IP counter and database cleanup tasks on a schedule, default value 30, unit minute| false    |
 | PENALTY_DURATION         |The basic penalty duration, each time exceeding the limit, the penalty duration will be doubled, default value 5, unit minutes| false    |
 | MAX_CACHE_SIZE           |Counter maximum cache value, default value 1000| false    |
 
