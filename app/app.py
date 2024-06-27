@@ -44,7 +44,7 @@ def rate_limit(func):
             data = rate_limit_data[ip_address]
 
             # 检查是否处于惩罚状态, 修正判断条件
-            if data["last_reset"] >= current_time: 
+            if data["last_reset"] >= current_time:
                 remaining_penalty = int(data["last_reset"] - current_time)
                 abort(
                     429,
@@ -107,6 +107,25 @@ def generate_share_code():
         code = "".join(random.choices(string.ascii_letters + string.digits, k=6))
         if not CodeShare.query.filter_by(share_code=code).first():
             return code
+
+
+def cleanup_expired_shares():
+    while True:
+        with app.app_context():
+            current_time = datetime.now(timezone.utc)
+            expired_shares = CodeShare.query.filter(
+                CodeShare.expiration_time < current_time
+            ).all()
+            for share in expired_shares:
+                db.session.delete(share)
+            db.session.commit()
+        time.sleep(CLEANUP_INTERVAL_MINUTES * 60)
+
+
+# 在单独的线程中启动清理任务
+cleanup_thread = threading.Thread(target=cleanup_expired_shares)
+cleanup_thread.daemon = True  # 设置为守护线程
+cleanup_thread.start()
 
 
 @app.route("/", methods=["GET"])
