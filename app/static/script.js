@@ -25,23 +25,24 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const codeInput = document.getElementById("code-input");
+    function adjustHeight() {
+        codeInput.style.height = 'auto';
 
-        function adjustHeight() {
-            codeInput.style.height = 'auto';
-            codeInput.style.height = (codeInput.scrollHeight) + 'px';
-            if (codeInput.scrollHeight > 600) {
-                codeInput.style.height = '600px';
-            }
+        const scrollHeight = codeInput.scrollHeight;
+
+        if (scrollHeight <= 300) {
+            codeInput.style.height = '300px'; // 最小高度
+        } else if (scrollHeight >= 700) {
+            codeInput.style.height = '700px'; // 最大高度
+        } else {
+            codeInput.style.height = scrollHeight + 'px';
         }
-
-        codeInput.addEventListener('input', adjustHeight);
-        // 初始调整
-        adjustHeight();
-        // 窗口大小改变时重新调整
-        window.addEventListener('resize', adjustHeight);
-    });
+    }
+    codeInput.addEventListener('input', adjustHeight);
+    // 初始调整
+    adjustHeight();
+    // 窗口大小改变时重新调整
+    window.addEventListener('resize', adjustHeight);
 
     shareButton.addEventListener("click", async () => {
         const code = codeInput.value.trim();

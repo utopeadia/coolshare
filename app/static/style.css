@@ -39,20 +39,18 @@ h1 {
 textarea {
 	display: block;
 	width: 100%;
-	min-height: 200px;
-	max-height: 600px;
-	/* 设置最大高度 */
+	min-height: 300px;
+	max-height: 700px;
 	padding: 12px;
-	border: 1px solid #ddd;
+	border: 1px solid #9d9a9a;
 	border-radius: 4px;
-	/* resize: vertical; */
 	resize: none;
-	/* 禁用手动调整大小 */
 	font-family: "Courier New", Courier, monospace;
 	box-sizing: border-box;
 	word-break: break-all;
-	overflow-y: hidden;
-	/* 初始时隐藏滚动条 */
+	overflow-y: auto;
+	line-height: 1.5;
+	transition: height 0.1s ease-in-out;
 }
 
 /* 输入框组 */
