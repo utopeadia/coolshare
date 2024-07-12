@@ -25,6 +25,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    codeInput.addEventListener('input', function () {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+        if (this.scrollHeight > 400) {
+            this.style.overflowY = 'auto';
+            this.style.height = '400px';
+        } else {
+            this.style.overflowY = 'hidden';
+        }
+    });
+
     shareButton.addEventListener("click", async () => {
         const code = codeInput.value.trim();
         const customCode = customCodeInput.value.trim();
