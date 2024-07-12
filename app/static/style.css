@@ -39,17 +39,20 @@ h1 {
 textarea {
 	display: block;
 	width: 100%;
-	min-height: 180px;
-	max-height: 600px; /* 设置最大高度 */
+	min-height: 200px;
+	max-height: 600px;
+	/* 设置最大高度 */
 	padding: 12px;
 	border: 1px solid #ddd;
 	border-radius: 4px;
 	/* resize: vertical; */
-	resize: none; /* 禁用手动调整大小 */
+	resize: none;
+	/* 禁用手动调整大小 */
 	font-family: "Courier New", Courier, monospace;
 	box-sizing: border-box;
 	word-break: break-all;
-	overflow-y: hidden; /* 初始时隐藏滚动条 */
+	overflow-y: hidden;
+	/* 初始时隐藏滚动条 */
 }
 
 /* 输入框组 */
@@ -196,4 +199,39 @@ button {
 		flex: 1 1 100%;
 		margin-bottom: 10px;
 	}
+}
+
+.footer {
+	background-color: #f8f9fa;
+	padding: 20px 0;
+	text-align: center;
+	font-size: 14px;
+	color: #6c757d;
+	border-top: 1px solid #e9ecef;
+	margin-top: 40px;
+}
+
+.footer-content {
+	max-width: 600px;
+	margin: 0 auto;
+}
+
+.footer p {
+	margin: 5px 0;
+}
+
+.footer a {
+	color: #007bff;
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+
+.footer a:hover {
+	color: #0056b3;
+	text-decoration: underline;
+}
+
+.footer p:last-child a::before {
+	content: "⚖ ";
+	margin-right: 2px;
 }
