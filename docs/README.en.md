@@ -20,9 +20,9 @@
 
 20240622 Update
 
-* Ready to Use 
-* Simple and lightweight (using Flask may not be lightweight, but it will be simple) </br> 
-Project directory as follows:
+* Ready to Use
+* Simple and lightweight (using Flask may not be lightweight, but it will be simple) `</br>`
+  Project directory as follows:
   ```
   │  
   ├──app/
@@ -38,9 +38,10 @@ Project directory as follows:
   ├──Dockerfile
   ```
 
-### Docker Deployment Method 
-* Expose Port 5000 
-* Persist /app/coolshare.db Database (optional) 
+### Docker Deployment Method
+
+* Expose Port 5000
+* Persist /app/coolshare.db Database (optional)
 * Configure environment variables (optional)
 
 Example：
@@ -48,23 +49,25 @@ Example：
 ```bash
 docker run -d --name coolshare --restart always -p 5000:5000 ghcr.io/utopeadia/coolshare:latest
 ```
+
 ```bash
 docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/coolshare.db:/app/coolshare.db ghcr.io/utopeadia/coolshare:latest
 ```
+
 ```bash
 docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/coolshare.db:/app/coolshare.db -e MAX_SHARE_TIME=100 ghcr.io/utopeadia/coolshare:latest
 ```
 
 ### Environment variables description
 
-|Environment variable name|Environment variable explanation|Is it necessary|
-| ------------------------ | ------------------------------------------------------------- | -------- |
-| MAX_SHARE_TIME           |Maximum sharing time, default value 4320, unit minutes| false    |
-| REQUEST_LIMIT            |Limits the total number of creations and deletions within the time window, with a default value of 24.| false    |
-| TIME_WINDOW              |Time window, default value 60, unit seconds| false    |
-| CLEANUP_INTERVAL_MINUTES |Execute IP counter and database cleanup tasks on a schedule, default value 30, unit minute| false    |
-| PENALTY_DURATION         |The basic penalty duration, each time exceeding the limit, the penalty duration will be doubled, default value 5, unit minutes| false    |
-| MAX_CACHE_SIZE           |Counter maximum cache value, default value 1000| false    |
+| Environment variable name | Environment variable explanation                                                                                               | Is it necessary |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------- |
+| MAX_SHARE_TIME            | Maximum sharing time, default value 4320, unit minutes                                                                         | false           |
+| REQUEST_LIMIT             | Limits the total number of creations and deletions within the time window, with a default value of 24.                         | false           |
+| TIME_WINDOW               | Time window, default value 60, unit seconds                                                                                    | false           |
+| CLEANUP_INTERVAL_MINUTES  | Execute IP counter and database cleanup tasks on a schedule, default value 30, unit minute                                     | false           |
+| PENALTY_DURATION          | The basic penalty duration, each time exceeding the limit, the penalty duration will be doubled, default value 5, unit minutes | false           |
+| MAX_CACHE_SIZE            | Counter maximum cache value, default value 1000                                                                                | false           |
 
 ![](../assets/index.png)
 ![](../assets/share.png)
@@ -73,6 +76,6 @@ docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/cool
 
 ## ~Under development, not yet available~ Initially usable.
 
-## 许可协议
-[GPL](LICENSE):This project is open-sourced under the **GPLv3** license.
+## License Agreement
 
+[GPL](LICENSE): This project is open-sourced under the **GPLv3** license.
