@@ -25,15 +25,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    codeInput.addEventListener('input', function () {
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
-        if (this.scrollHeight > 400) {
-            this.style.overflowY = 'auto';
-            this.style.height = '400px';
-        } else {
-            this.style.overflowY = 'hidden';
+    document.addEventListener("DOMContentLoaded", () => {
+        const codeInput = document.getElementById("code-input");
+
+        function adjustHeight() {
+            codeInput.style.height = 'auto';
+            codeInput.style.height = (codeInput.scrollHeight) + 'px';
+            if (codeInput.scrollHeight > 600) {
+                codeInput.style.height = '600px';
+            }
         }
+
+        codeInput.addEventListener('input', adjustHeight);
+        // 初始调整
+        adjustHeight();
+        // 窗口大小改变时重新调整
+        window.addEventListener('resize', adjustHeight);
     });
 
     shareButton.addEventListener("click", async () => {

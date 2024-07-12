@@ -40,7 +40,7 @@ textarea {
 	display: block;
 	width: 100%;
 	min-height: 180px;
-	max-height: 400px; /* 设置最大高度 */
+	max-height: 600px; /* 设置最大高度 */
 	padding: 12px;
 	border: 1px solid #ddd;
 	border-radius: 4px;
