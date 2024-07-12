@@ -74,8 +74,6 @@ docker run -d --name coolshare --restart always -p 5000:5000 -v ~/coolshare/cool
 ![](../assets/view.png)
 ![](../assets/404.png)
 
-## ~Under development, not yet available~ Initially usable.
-
 ## License Agreement
 
 [GPL](LICENSE): This project is open-sourced under the **GPLv3** license.
